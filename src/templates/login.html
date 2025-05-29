@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Instagram Scheduler</title>
+    <style>
+        body {
+            background: #fafbfc;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+            padding: 40px 32px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2rem;
+            color: #262626;
+            margin-bottom: 16px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        input[type="text"],
+        input[type="password"] {
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: #fafbfc;
+            transition: border 0.2s;
+        }
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border: 1.5px solid #d6249f;
+            outline: none;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 32px;
+            background: linear-gradient(90deg, #fd5949 0%, #d6249f 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(253,89,73,0.08);
+            cursor: pointer;
+        }
+        .btn:hover {
+            background: linear-gradient(90deg, #d6249f 0%, #fd5949 100%);
+            box-shadow: 0 4px 16px rgba(214,36,159,0.12);
+        }
+        .back-link {
+            display: block;
+            margin-top: 24px;
+            color: #d6249f;
+            text-decoration: none;
+            font-size: 0.98rem;
+            transition: color 0.2s;
+        }
+        .back-link:hover {
+            color: #fd5949;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Login</h1>
+        <form method="post" action="/login">
+            <input type="text" name="username" placeholder="Username" required autocomplete="username">
+            <input type="password" name="password" placeholder="Password" required autocomplete="current-password">
+            <button type="submit" class="btn">Log In</button>
+        </form>
+        <a href="/" class="back-link">&larr; Back to Home</a>
+    </div>
+</body>
+</html>

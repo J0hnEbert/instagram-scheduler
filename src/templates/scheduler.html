@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Scheduler</title>
+    <style>
+        body {
+            background: #fafbfc;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        .scheduler-container {
+            max-width: 1100px;
+            margin: 48px auto 32px auto;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+            padding: 0 0 48px 0;
+            overflow: hidden;
+        }
+        .tab-bar {
+            display: flex;
+            border-bottom: 2px solid #f0f0f0;
+            background: #fff;
+            border-radius: 18px 18px 0 0;
+            overflow: hidden;
+        }
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 22px 0 16px 0;
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #d6249f;
+            cursor: pointer;
+            border: none;
+            background: #fff;
+            outline: none;
+            transition: background 0.2s, color 0.2s;
+            letter-spacing: 0.5px;
+        }
+        .tab.active {
+            background: linear-gradient(90deg, #fd5949 0%, #d6249f 100%);
+            color: #fff;
+            border-bottom: 4px solid #fff;
+            z-index: 2;
+        }
+        .slides {
+            position: relative;
+            min-height: 520px;
+        }
+        .slide {
+            display: none;
+            padding: 48px 48px 0 48px;
+            box-sizing: border-box;
+            min-height: 520px;
+            width: 100%;
+            position: absolute;
+            left: 0; top: 0;
+        }
+        .slide.active {
+            display: block;
+            position: relative;
+            animation: fadeIn 0.4s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+        h2 {
+            font-size: 2rem;
+            color: #d6249f;
+            margin-bottom: 32px;
+            text-align: left;
+            letter-spacing: 0.5px;
+        }
+        label {
+            font-weight: 500;
+            color: #262626;
+            margin-bottom: 6px;
+            display: block;
+        }
+        .row {
+            margin-bottom: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .inline {
+            display: flex;
+            gap: 18px;
+        }
+        .inline > * {
+            flex: 1;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        .small-btn {
+            padding: 8px 18px;
+            font-size: 0.98rem;
+            margin-top: 8px;
+            align-self: flex-start;
+        }
+        .prompt-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            margin-bottom: 12px;
+        }
+        .prompt-row input {
+            flex: 1;
+            margin-bottom: 8px;
+        }
+        .generated-content {
+            background: #fafbfc;
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-top: 8px;
+            font-size: 1rem;
+            color: #555;
+        }
+        input[type="text"],
+        input[type="password"],
+        input[type="datetime-local"],
+        select,
+        textarea {
+            padding: 14px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1.08rem;
+            background: #fafbfc;
+            transition: border 0.2s;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        input[type="datetime-local"]:focus,
+        select:focus,
+        textarea:focus {
+            border: 1.5px solid #d6249f;
+            outline: none;
+        }
+        /* Custom file input */
+        .file-input-wrapper {
+            position: relative;
+            width: 100%;
+        }
+        .file-input {
+            opacity: 0;
+            width: 100%;
+            height: 48px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            cursor: pointer;
+        }
+        .file-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(90deg, #fd5949 0%, #d6249f 100%);
+            color: #fff;
+            border-radius: 8px;
+            font-size: 1.08rem;
+            font-weight: 500;
+            height: 48px;
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(253,89,73,0.08);
+            border: none;
+        }
+        .file-label:hover {
+            background: linear-gradient(90deg, #d6249f 0%, #fd5949 100%);
+            box-shadow: 0 4px 16px rgba(214,36,159,0.12);
+        }
+        .file-name {
+            margin-top: 6px;
+            font-size: 1rem;
+            color: #555;
+            text-align: left;
+            word-break: break-all;
+        }
+        .btn,
+        .small-btn {
+            display: inline-block;
+            min-width: 210px;
+            padding: 14px 0;
+            background: linear-gradient(90deg, #fd5949 0%, #d6249f 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.08rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(253,89,73,0.08);
+            cursor: pointer;
+            margin-top: 18px;
+            align-self: flex-start;
+            text-align: center;
+        }
+        .btn:hover,
+        .small-btn:hover {
+            background: linear-gradient(90deg, #d6249f 0%, #fd5949 100%);
+            box-shadow: 0 4px 16px rgba(214,36,159,0.12);
+        }
+        .small-btn {
+            margin-top: 8px;
+            margin-bottom: 0;
+            min-width: 210px;
+            padding: 12px 0;
+            font-size: 1.08rem;
+        }
+        .logout-link {
+            display: block;
+            margin: 40px auto 0 auto;
+            color: #d6249f;
+            text-decoration: none;
+            font-size: 1.08rem;
+            text-align: center;
+            transition: color 0.2s;
+            cursor: pointer;
+            width: fit-content;
+        }
+        .logout-link:hover {
+            color: #fd5949;
+        }
+        /* Scheduled posts table */
+        .scheduled-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+        .scheduled-table th, .scheduled-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+            font-size: 1.05rem;
+        }
+        .scheduled-table th {
+            background: #fafbfc;
+            color: #d6249f;
+            font-weight: 600;
+        }
+        .edit-btn {
+            padding: 8px 20px;
+            font-size: 1rem;
+            background: #fafbfc;
+            color: #d6249f;
+            border: 1.5px solid #d6249f;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        .edit-btn:hover {
+            background: #d6249f;
+            color: #fff;
+        }
+        @media (max-width: 1200px) {
+            .scheduler-container {
+                max-width: 99vw;
+            }
+            .slide {
+                padding-left: 3vw;
+                padding-right: 3vw;
+            }
+        }
+        @media (max-width: 700px) {
+            .slide {
+                padding: 18px 2vw 0 2vw;
+            }
+            .tab {
+                font-size: 0.98rem;
+                padding: 12px 0 8px 0;
+            }
+            h2 {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="scheduler-container" id="scheduler-container">
+        <div class="tab-bar">
+            <button class="tab active" data-slide="0">Picture</button>
+            <button class="tab" data-slide="1">Picture + Caption</button>
+            <button class="tab" data-slide="2">Video</button>
+            <button class="tab" data-slide="3">AI Post</button>
+            <button class="tab" data-slide="4">Scheduled</button>
+        </div>
+        <div class="slides" id="slides">
+            <!-- Picture Slide -->
+            <div class="slide active" id="slide-picture">
+                <h2>Picture Post</h2>
+                <form>
+                    <div class="row">
+                        <label for="pic-upload">Upload Picture</label>
+                        <div class="file-input-wrapper">
+                            <label class="file-label" for="pic-upload">Choose Picture</label>
+                            <input class="file-input" type="file" id="pic-upload" accept="image/*">
+                            <div class="file-name" id="pic-upload-name"></div>
+                        </div>
+                    </div>
+                    <div class="row inline">
+                        <div>
+                            <label for="pic-schedule-date">Schedule Date & Time</label>
+                            <input type="datetime-local" id="pic-schedule-date">
+                        </div>
+                        <div>
+                            <label for="pic-timezone">Timezone</label>
+                            <select id="pic-timezone">
+                                <option>UTC</option>
+                                <option>PST</option>
+                                <option>EST</option>
+                                <option>CET</option>
+                                <option>IST</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn" type="button">Save & Schedule</button>
+                </form>
+            </div>
+            <!-- Picture with Caption Slide -->
+            <div class="slide" id="slide-picture-caption">
+                <h2>Picture with Caption</h2>
+                <form>
+                    <div class="row">
+                        <label for="piccap-upload">Upload Picture</label>
+                        <div class="file-input-wrapper">
+                            <label class="file-label" for="piccap-upload">Choose Picture</label>
+                            <input class="file-input" type="file" id="piccap-upload" accept="image/*">
+                            <div class="file-name" id="piccap-upload-name"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label for="piccap-caption">Caption</label>
+                        <textarea id="piccap-caption" placeholder="Write your caption..."></textarea>
+                        <button class="btn small-btn" id="generate-caption2" type="button">Auto Generate Caption</button>
+                    </div>
+                    <div class="row">
+                        <label for="piccap-hashtags">Hashtags</label>
+                        <input type="text" id="piccap-hashtags" placeholder="#hashtag1 #hashtag2">
+                        <button class="btn small-btn" id="generate-hashtags2" type="button">Auto Generate Hashtags</button>
+                    </div>
+                    <div class="row inline">
+                        <div>
+                            <label for="piccap-schedule-date">Schedule Date & Time</label>
+                            <input type="datetime-local" id="piccap-schedule-date">
+                        </div>
+                        <div>
+                            <label for="piccap-timezone">Timezone</label>
+                            <select id="piccap-timezone">
+                                <option>UTC</option>
+                                <option>PST</option>
+                                <option>EST</option>
+                                <option>CET</option>
+                                <option>IST</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn" type="button">Save & Schedule</button>
+                </form>
+            </div>
+            <!-- Video Slide -->
+            <div class="slide" id="slide-video">
+                <h2>Video Post</h2>
+                <form>
+                    <div class="row">
+                        <label for="video-upload">Upload Video</label>
+                        <div class="file-input-wrapper">
+                            <label class="file-label" for="video-upload">Choose Video</label>
+                            <input class="file-input" type="file" id="video-upload" accept="video/*">
+                            <div class="file-name" id="video-upload-name"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label for="video-caption">Caption</label>
+                        <textarea id="video-caption" placeholder="Write your caption..."></textarea>
+                        <button class="btn small-btn" id="generate-caption3" type="button">Auto Generate Caption</button>
+                    </div>
+                    <div class="row">
+                        <label for="video-hashtags">Hashtags</label>
+                        <input type="text" id="video-hashtags" placeholder="#hashtag1 #hashtag2">
+                        <button class="btn small-btn" id="generate-hashtags3" type="button">Auto Generate Hashtags</button>
+                    </div>
+                    <div class="row inline">
+                        <div>
+                            <label for="video-schedule-date">Schedule Date & Time</label>
+                            <input type="datetime-local" id="video-schedule-date">
+                        </div>
+                        <div>
+                            <label for="video-timezone">Timezone</label>
+                            <select id="video-timezone">
+                                <option>UTC</option>
+                                <option>PST</option>
+                                <option>EST</option>
+                                <option>CET</option>
+                                <option>IST</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn" type="button">Save & Schedule</button>
+                </form>
+            </div>
+            <!-- AI-generated Post Slide -->
+            <div class="slide" id="slide-ai">
+                <h2>AI-generated Post</h2>
+                <form>
+                    <div class="row">
+                        <label>Generate Post with Prompt</label>
+                        <div class="prompt-row">
+                            <input type="text" id="prompt" placeholder="Describe your post idea...">
+                            <button class="btn small-btn" id="generate-post" type="button" style="margin-top:0;">Generate</button>
+                        </div>
+                        <div class="generated-content" id="generated-content" style="display:none;">
+                            <!-- Placeholder for generated post preview -->
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label for="ai-caption">Caption</label>
+                        <textarea id="ai-caption" placeholder="Write your caption..."></textarea>
+                        <button class="btn small-btn" id="generate-caption4" type="button">Auto Generate Caption</button>
+                    </div>
+                    <div class="row">
+                        <label for="ai-hashtags">Hashtags</label>
+                        <input type="text" id="ai-hashtags" placeholder="#hashtag1 #hashtag2">
+                        <button class="btn small-btn" id="generate-hashtags4" type="button">Auto Generate Hashtags</button>
+                    </div>
+                    <div class="row inline">
+                        <div>
+                            <label for="ai-schedule-date">Schedule Date & Time</label>
+                            <input type="datetime-local" id="ai-schedule-date">
+                        </div>
+                        <div>
+                            <label for="ai-timezone">Timezone</label>
+                            <select id="ai-timezone">
+                                <option>UTC</option>
+                                <option>PST</option>
+                                <option>EST</option>
+                                <option>CET</option>
+                                <option>IST</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn" type="button">Save & Schedule</button>
+                </form>
+            </div>
+            <!-- View/Edit Scheduled Slide -->
+            <div class="slide" id="slide-view">
+                <h2>Scheduled Posts</h2>
+                <table class="scheduled-table">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Caption</th>
+                            <th>Scheduled For</th>
+                            <th>Timezone</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Example rows, replace with dynamic content -->
+                        <tr>
+                            <td>Picture</td>
+                            <td>Sunset at the beach</td>
+                            <td>2025-06-01 18:00</td>
+                            <td>PST</td>
+                            <td><button class="edit-btn">Edit</button></td>
+                        </tr>
+                        <tr>
+                            <td>Video</td>
+                            <td>Check out my new reel!</td>
+                            <td>2025-06-02 12:00</td>
+                            <td>UTC</td>
+                            <td><button class="edit-btn">Edit</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <a href="/" class="logout-link">&larr; Log out</a>
+    </div>
+    <script>
+        // Tab/slide logic
+        const tabs = document.querySelectorAll('.tab');
+        const slides = document.querySelectorAll('.slide');
+        tabs.forEach((tab, idx) => {
+            tab.onclick = () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                slides.forEach(s => s.classList.remove('active'));
+                tab.classList.add('active');
+                slides[idx].classList.add('active');
+            };
+        });
+
+        // File input display
+        function setupFileInput(inputId, nameId) {
+            const input = document.getElementById(inputId);
+            const nameDiv = document.getElementById(nameId);
+            input.addEventListener('change', function() {
+                if (input.files.length > 0) {
+                    nameDiv.textContent = input.files[0].name;
+                } else {
+                    nameDiv.textContent = '';
+                }
+            });
+        }
+        setupFileInput('pic-upload', 'pic-upload-name');
+        setupFileInput('piccap-upload', 'piccap-upload-name');
+        setupFileInput('video-upload', 'video-upload-name');
+
+        // Mockup: Show generated content
+        document.getElementById('generate-post').onclick = () => {
+            const prompt = document.getElementById('prompt').value.trim();
+            const gen = document.getElementById('generated-content');
+            if (prompt) {
+                gen.style.display = 'block';
+                gen.textContent = `Generated post for: "${prompt}" (mockup preview)`;
+            } else {
+                gen.style.display = 'none';
+            }
+        };
+        // Mockup: Auto-generate captions/hashtags
+        document.getElementById('generate-caption2').onclick = () => {
+            document.getElementById('piccap-caption').value = "This is an auto-generated caption! (mockup)";
+        };
+        document.getElementById('generate-hashtags2').onclick = () => {
+            document.getElementById('piccap-hashtags').value = "#instagood #mockup #scheduler";
+        };
+        document.getElementById('generate-caption3').onclick = () => {
+            document.getElementById('video-caption').value = "This is an auto-generated caption! (mockup)";
+        };
+        document.getElementById('generate-hashtags3').onclick = () => {
+            document.getElementById('video-hashtags').value = "#video #mockup #scheduler";
+        };
+        document.getElementById('generate-caption4').onclick = () => {
+            document.getElementById('ai-caption').value = "This is an AI-generated caption! (mockup)";
+        };
+        document.getElementById('generate-hashtags4').onclick = () => {
+            document.getElementById('ai-hashtags').value = "#ai #mockup #scheduler";
+        };
+    </script>
+</body>
+</html>

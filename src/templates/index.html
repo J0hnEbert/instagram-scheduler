@@ -3,9 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Homepage</title>
+    <title>Instagram Scheduler</title>
+    <style>
+        body {
+            background: #fafbfc;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .slider-container {
+            width: 400px;
+            max-width: 95vw;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+            overflow: hidden;
+            position: relative;
+            transition: height 0.4s cubic-bezier(.77,0,.18,1);
+        }
+        .slides {
+            display: flex;
+            width: 800px;
+            transition: transform 0.5s cubic-bezier(.77,0,.18,1);
+        }
+        .slide {
+            width: 400px;
+            padding: 40px 32px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2rem;
+            color: #262626;
+            margin-bottom: 16px;
+        }
+        p {
+            color: #555;
+            font-size: 1.1rem;
+            margin-bottom: 32px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 32px;
+            background: linear-gradient(90deg, #fd5949 0%, #d6249f 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(253,89,73,0.08);
+            cursor: pointer;
+        }
+        .btn:hover {
+            background: linear-gradient(90deg, #d6249f 0%, #fd5949 100%);
+            box-shadow: 0 4px 16px rgba(214,36,159,0.12);
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        input[type="text"],
+        input[type="password"] {
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: #fafbfc;
+            transition: border 0.2s;
+        }
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border: 1.5px solid #d6249f;
+            outline: none;
+        }
+        .back-link {
+            display: block;
+            margin-top: 24px;
+            color: #d6249f;
+            text-decoration: none;
+            font-size: 0.98rem;
+            transition: color 0.2s;
+            cursor: pointer;
+        }
+        .back-link:hover {
+            color: #fd5949;
+        }
+    </style>
 </head>
 <body>
-    <p>Helllo, World!!!</p>
+    <div class="slider-container" id="slider-container">
+        <div class="slides" id="slides">
+            <!-- Welcome Slide -->
+            <div class="slide" id="welcome-slide">
+                <h1>Instagram Scheduler</h1>
+                <p>
+                    Effortlessly create, save, and schedule Instagram posts for one or multiple users.<br>
+                    Manage your content and stay consistent with your social media presence.
+                </p>
+                <button class="btn" id="to-login">Get Started</button>
+            </div>
+            <!-- Login Slide -->
+            <div class="slide" id="login-slide">
+                <h1>Login</h1>
+                <form method="post" action="/scheduler">
+                    <input type="text" name="username" placeholder="Username" required autocomplete="username">
+                    <input type="password" name="password" placeholder="Password" required autocomplete="current-password">
+                    <button type="submit" class="btn">Log In</button>
+                </form>
+                <span class="back-link" id="to-home">&larr; Back to Home</span>
+            </div>
+        </div>
+    </div>
+    <script>
+        const slides = document.getElementById('slides');
+        const sliderContainer = document.getElementById('slider-container');
+        const welcomeSlide = document.getElementById('welcome-slide');
+        const loginSlide = document.getElementById('login-slide');
+
+        function setContainerHeight(slide) {
+            sliderContainer.style.height = slide.offsetHeight + 'px';
+        }
+
+        // Set initial height
+        window.onload = () => {
+            setContainerHeight(welcomeSlide);
+        };
+
+        document.getElementById('to-login').onclick = () => {
+            slides.style.transform = 'translateX(-400px)';
+            setContainerHeight(loginSlide);
+        };
+        document.getElementById('to-home').onclick = () => {
+            slides.style.transform = 'translateX(0)';
+            setContainerHeight(welcomeSlide);
+        };
+
+        // Optional: Adjust height on window resize
+        window.addEventListener('resize', () => {
+            if (slides.style.transform === 'translateX(-400px)') {
+                setContainerHeight(loginSlide);
+            } else {
+                setContainerHeight(welcomeSlide);
+            }
+        });
+    </script>
 </body>
 </html>
