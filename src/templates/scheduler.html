@@ -287,6 +287,11 @@
 </head>
 <body>
     <div class="scheduler-container" id="scheduler-container">
+
+        <div style="position: absolute; top: 18px; right: 24px; font-size: 1.05rem; font-weight: 500; color: #d6249f;">
+            🔒 Logged in as: @{{ username }}
+        </div>
+
         <div class="tab-bar">
             <button class="tab active" data-slide="0">Picture</button>
             <button class="tab" data-slide="1">Picture + Caption</button>
@@ -471,7 +476,12 @@
                             <td>Sunset at the beach</td>
                             <td>2025-06-01 18:00</td>
                             <td>PST</td>
-                            <td><button class="edit-btn">Edit</button></td>
+                            <td>
+                                <button class="edit-btn">Edit</button>
+                                <button class="edit-btn">Post Now</button>
+                                <button class="edit-btn">Delete</button>
+                            </td>
+
                         </tr>
                         <tr>
                             <td>Video</td>
@@ -511,6 +521,59 @@
                 }
             });
         }
+
+        async function uploadFile(inputId, username) {
+        const input = document.getElementById(inputId);
+        const file = input.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+            const response = await fetch(`/upload/${username}`, {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+            if (result.status === 'success') {
+                console.log('File uploaded to:', result.filename);
+                return result.filename;
+            } else {
+                alert('Upload failed: ' + result.error);
+                return null;
+            }
+        }
+        document.querySelector('#slide-picture form .btn').onclick = async () => {
+            const username = '{{ username }}';
+            const filename = await uploadFile('pic-upload', username);
+            const datetime = document.getElementById('pic-schedule-date').value;
+            const timezone = document.getElementById('pic-timezone').value;
+
+            if (!filename || !datetime) {
+                alert('Missing required fields.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('type', 'picture');
+            formData.append('filename', filename);
+            formData.append('caption', '');
+            formData.append('hashtags', '');
+            formData.append('schedule_time', datetime);
+            formData.append('timezone', timezone);
+
+            const res = await fetch('/schedule', { method: 'POST', body: formData });
+            const result = await res.json();
+
+            if (result.status === 'success') {
+                alert('Post scheduled!');
+            } else {
+                alert('Error: ' + result.error);
+            }
+        };
+
+
         setupFileInput('pic-upload', 'pic-upload-name');
         setupFileInput('piccap-upload', 'piccap-upload-name');
         setupFileInput('video-upload', 'video-upload-name');
