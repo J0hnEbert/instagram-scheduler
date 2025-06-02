@@ -559,4 +559,55 @@
             formData.append('type', 'picture');
             formData.append('filename', filename);
             formData.append('caption', '');
-            formData.append('hashtags
+            formData.append('hashtags', '');
+            formData.append('schedule_time', datetime);
+            formData.append('timezone', timezone);
+
+            const res = await fetch('/schedule', { method: 'POST', body: formData });
+            const result = await res.json();
+
+            if (result.status === 'success') {
+                alert('Post scheduled!');
+            } else {
+                alert('Error: ' + result.error);
+            }
+        };
+
+
+        setupFileInput('pic-upload', 'pic-upload-name');
+        setupFileInput('piccap-upload', 'piccap-upload-name');
+        setupFileInput('video-upload', 'video-upload-name');
+
+        // Mockup: Show generated content
+        document.getElementById('generate-post').onclick = () => {
+            const prompt = document.getElementById('prompt').value.trim();
+            const gen = document.getElementById('generated-content');
+            if (prompt) {
+                gen.style.display = 'block';
+                gen.textContent = `Generated post for: "${prompt}" (mockup preview)`;
+            } else {
+                gen.style.display = 'none';
+            }
+        };
+        // Mockup: Auto-generate captions/hashtags
+        document.getElementById('generate-caption2').onclick = () => {
+            document.getElementById('piccap-caption').value = "This is an auto-generated caption! (mockup)";
+        };
+        document.getElementById('generate-hashtags2').onclick = () => {
+            document.getElementById('piccap-hashtags').value = "#instagood #mockup #scheduler";
+        };
+        document.getElementById('generate-caption3').onclick = () => {
+            document.getElementById('video-caption').value = "This is an auto-generated caption! (mockup)";
+        };
+        document.getElementById('generate-hashtags3').onclick = () => {
+            document.getElementById('video-hashtags').value = "#video #mockup #scheduler";
+        };
+        document.getElementById('generate-caption4').onclick = () => {
+            document.getElementById('ai-caption').value = "This is an AI-generated caption! (mockup)";
+        };
+        document.getElementById('generate-hashtags4').onclick = () => {
+            document.getElementById('ai-hashtags').value = "#ai #mockup #scheduler";
+        };
+    </script>
+</body>
+</html>
