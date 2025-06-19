@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Schedule Post{% endblock %}
+{% block content %}
+<h2>Schedule Instagram Post</h2>
+<form method="post" enctype="multipart/form-data">
+  <div class="mb-3">
+    <label for="image" class="form-label">Image</label>
+    <input type="file" class="form-control" name="image" id="image">
+  </div>
+  <div class="mb-3">
+    <label for="video" class="form-label">Video</label>
+    <input type="file" class="form-control" name="video" id="video">
+  </div>
+  <div class="mb-3">
+    <label for="caption" class="form-label">Caption</label>
+    <textarea class="form-control" name="caption" id="caption" rows="3"></textarea>
+  </div>
+  <div class="mb-3 form-check">
+    <input type="checkbox" class="form-check-input" name="generate" id="generate">
+    <label class="form-check-label" for="generate">Generate caption and hashtags</label>
+  </div>
+  <button type="submit" class="btn btn-success">Post</button>
+</form>
+{% endblock %}
