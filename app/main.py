@@ -109,3 +109,39 @@ def delete_post(post_id):
     conn.close()
     flash(f'Post {post_id} wurde gelöscht.', 'info')
     return redirect(url_for('main.dashboard'))
+
+@main.route('/upload_image_caption', methods=['POST'])
+def upload_image_caption():
+    if not session.get('logged_in'):
+        return redirect(url_for('main.login'))
+
+    file = request.files.get('file')
+    if not file:
+        flash('Kein Datei-Upload erkannt.', 'danger')
+        return redirect(url_for('main.dashboard'))
+
+    path = save_uploaded_file(file)
+    caption = request.form.get('caption')
+    hashtags = request.form.get('hashtags')
+    scheduled_time = normalize_scheduled_time(request.form.get('scheduled_time'))
+    insert_post(session['username'], path, caption, hashtags, 'image_caption', scheduled_time)
+    flash("Bild + Caption erfolgreich eingeplant!" if scheduled_time else "Bild + Caption erfolgreich hochgeladen!", 'success')
+    return redirect(url_for('main.dashboard'))
+
+@main.route('/upload_video', methods=['POST'])
+def upload_video():
+    if not session.get('logged_in'):
+        return redirect(url_for('main.login'))
+
+    file = request.files.get('file')
+    if not file:
+        flash('Kein Datei-Upload erkannt.', 'danger')
+        return redirect(url_for('main.dashboard'))
+
+    path = save_uploaded_file(file)
+    caption = request.form.get('caption')
+    hashtags = request.form.get('hashtags')
+    scheduled_time = normalize_scheduled_time(request.form.get('scheduled_time'))
+    insert_post(session['username'], path, caption, hashtags, 'video', scheduled_time)
+    flash("Video erfolgreich eingeplant!" if scheduled_time else "Video erfolgreich hochgeladen!", 'success')
+    return redirect(url_for('main.dashboard'))

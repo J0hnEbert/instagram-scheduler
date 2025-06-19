@@ -11,7 +11,6 @@ def start_scheduler():
     t.start()
     print("[Main] Scheduler Thread gestartet.")
 
-start_scheduler()
-
 if __name__ == '__main__':
+    start_scheduler()
     app.run(port=8081, debug=True)
