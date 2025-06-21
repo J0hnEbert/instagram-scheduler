@@ -1,45 +1,29 @@
 import time
-import threading
-from app.db import get_due_posts, update_post_status, get_all_pending_posts
+from app.db import get_due_posts, update_post_status
 from app.insta_client import get_client
 
 def post_now(post):
-    post_id, username, file_path, caption, hashtags, post_type, scheduled_time, status = post
-    cl = get_client(username)
-    if not cl:
-        raise Exception(f"Keine gültige Session für {username}. Bitte erneut einloggen.")
-
-    full_caption = (caption or "") + "\n" + (hashtags or "")
-    full_caption = full_caption.strip()
-
-    if post_type == 'image':
-        cl.photo_upload(file_path, "")
-    elif post_type == 'image_caption':
-        cl.photo_upload(file_path, full_caption)
-    elif post_type == 'video':
-        cl.video_upload(file_path, full_caption)
-    else:
-        raise Exception(f"Unbekannter Typ: {post_type}")
+    cl = get_client(post[1])
+    file_path = post[2]
+    caption = (post[3] or '') + "\n" + (post[4] or '')
+    if post[5] in ['image', 'image_caption']:
+        cl.photo_upload(file_path, caption.strip())
+    elif post[5] == 'video':
+        cl.video_upload(file_path, caption.strip())
 
 def scheduler_loop():
-    print("[Scheduler] Gestartet...")
     while True:
         due_posts = get_due_posts()
         if due_posts:
-            print(f"[Scheduler] Fällige Posts: {len(due_posts)}")
-            for post in due_posts:
-                try:
-                    update_post_status(post[0], 'processing')
-                    post_now(post)
-                    update_post_status(post[0], 'posted')
-                    print(f"[Scheduler] Post {post[0]} erfolgreich gepostet.")
-                except Exception as e:
-                    update_post_status(post[0], 'failed')
-                    print(f"[Scheduler] Fehler bei Post {post[0]}: {e}")
+            print(f"[Scheduler] Fällige Posts gefunden: {len(due_posts)}")
         else:
-            all_pending = get_all_pending_posts()
-            if all_pending:
-                print(f"[Scheduler] Nächster geplanter Post um: {all_pending[0][6]}")
-            else:
-                print("[Scheduler] Keine geplanten Posts.")
+            print("[Scheduler] Keine fälligen Posts.")
+        for post in due_posts:
+            try:
+                post_now(post)
+                update_post_status(post[0], 'posted')
+                print(f"[Scheduler] Post {post[0]} erfolgreich gepostet.")
+            except Exception as e:
+                update_post_status(post[0], 'failed')
+                print(f"[Scheduler] Fehler beim Posten von {post[0]}: {e}")
         time.sleep(10)

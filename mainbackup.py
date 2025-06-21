@@ -203,32 +203,21 @@ def generate_blip_caption():
     if not session.get('logged_in'):
         return jsonify({'error': 'Nicht eingeloggt'}), 401
 
-    # Prüfen, ob ein Pfad übergeben wurde
-    image_path = request.json.get('image_path') if request.is_json else None
+    file = request.files.get('file')
+    if not file:
+        return jsonify({'error': 'Kein Bild hochgeladen'}), 400
 
-    if image_path:
-        full_path = os.path.join('app/static', image_path)
-        if not os.path.exists(full_path):
-            return jsonify({'error': 'Bild nicht gefunden'}), 400
-    else:
-        # Fallback: Datei-Upload
-        file = request.files.get('file')
-        if not file:
-            return jsonify({'error': 'Kein Bild übermittelt'}), 400
+    temp_path = os.path.join(UPLOAD_FOLDER, "temp_" + datetime.now().strftime("%Y%m%d%H%M%S_") + file.filename)
+    os.makedirs(os.path.dirname(temp_path), exist_ok=True)
+    file.save(temp_path)
 
-        full_path = os.path.join(UPLOAD_FOLDER, "temp_" + datetime.now().strftime("%Y%m%d%H%M%S_") + file.filename)
-        file.save(full_path)
-        delete_after = True
     try:
-        caption = generate_caption(full_path)
+        caption = generate_caption(temp_path)
     except Exception as e:
-        if image_path is None and os.path.exists(full_path):
-            os.remove(full_path)
+        os.remove(temp_path)
         return jsonify({'error': f'Caption-Generierung fehlgeschlagen: {e}'}), 500
 
-    if image_path is None and os.path.exists(full_path):
-        os.remove(full_path)
-
+    os.remove(temp_path)
     return jsonify({'caption': caption})
 
 
@@ -237,28 +226,19 @@ def generate_blip_hashtags():
     if not session.get('logged_in'):
         return jsonify({'error': 'Nicht eingeloggt'}), 401
 
-    image_path = request.json.get('image_path') if request.is_json else None
+    file = request.files.get('file')
+    if not file:
+        return jsonify({'error': 'Kein Bild hochgeladen'}), 400
 
-    if image_path:
-        full_path = os.path.join('app/static', image_path)
-        if not os.path.exists(full_path):
-            return jsonify({'error': 'Bild nicht gefunden'}), 400
-    else:
-        file = request.files.get('file')
-        if not file:
-            return jsonify({'error': 'Kein Bild übermittelt'}), 400
-
-        full_path = os.path.join(UPLOAD_FOLDER, "temp_" + datetime.now().strftime("%Y%m%d%H%M%S_") + file.filename)
-        file.save(full_path)
+    temp_path = os.path.join(UPLOAD_FOLDER, "temp_" + datetime.now().strftime("%Y%m%d%H%M%S_") + file.filename)
+    os.makedirs(os.path.dirname(temp_path), exist_ok=True)
+    file.save(temp_path)
 
     try:
-        hashtags = generate_hashtags(full_path)
+        hashtags = generate_hashtags(temp_path)
     except Exception as e:
-        if image_path is None and os.path.exists(full_path):
-            os.remove(full_path)
+        os.remove(temp_path)
         return jsonify({'error': f'Hashtag-Generierung fehlgeschlagen: {e}'}), 500
 
-    if image_path is None and os.path.exists(full_path):
-        os.remove(full_path)
-
+    os.remove(temp_path)
     return jsonify({'hashtags': hashtags})

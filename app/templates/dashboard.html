@@ -12,6 +12,9 @@
     <li class="nav-item" role="presentation">
         <button class="nav-link" id="video-tab" data-bs-toggle="tab" data-bs-target="#video" type="button" role="tab">Video</button>
     </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="ai-tab" data-bs-toggle="tab" data-bs-target="#ai-generator" type="button" role="tab">KI-Generator</button>
+    </li>
 </ul>
 
 <div class="tab-content mt-3">
@@ -19,69 +22,99 @@
     <div class="tab-pane fade show active" id="image" role="tabpanel">
         <form method="POST" action="/upload_image" enctype="multipart/form-data">
             <div class="mb-3">
-                <label for="imageFile" class="form-label">Bild auswählen</label>
-                <input class="form-control" type="file" name="file" id="imageFile" accept="image/*" required>
+                <label class="form-label">Bild auswählen</label>
+                <input class="form-control" type="file" name="file" accept="image/*" required>
             </div>
             <div class="mb-3">
-                <label for="scheduledTimeImage" class="form-label">Geplanter Zeitpunkt (leer = sofort)</label>
-                <input class="form-control" type="datetime-local" name="scheduled_time" id="scheduledTimeImage">
+                <label class="form-label">Geplanter Zeitpunkt (leer = sofort)</label>
+                <input class="form-control" type="datetime-local" name="scheduled_time">
             </div>
             <button type="submit" class="btn btn-primary">Hochladen</button>
         </form>
     </div>
 
     <!-- Bild + Caption -->
-<div class="tab-pane fade" id="image-caption" role="tabpanel">
-    <form method="POST" action="/upload_image_caption" enctype="multipart/form-data">
-        <input class="form-control mb-2" type="file" name="file" accept="image/*" required>
-        <textarea class="form-control mb-2" name="caption" placeholder="Caption"></textarea>
-        <input class="form-control mb-2" type="text" name="hashtags" placeholder="Hashtags">
-        <input class="form-control mb-2" type="datetime-local" name="scheduled_time">
-        <button type="submit" class="btn btn-primary">Hochladen</button>
-    </form>
-</div>
+    <div class="tab-pane fade" id="image-caption" role="tabpanel">
+        <form method="POST" action="/upload_image_caption" enctype="multipart/form-data" id="imageCaptionForm">
+            <div class="mb-3">
+                <input class="form-control" type="file" name="file" id="imageCaptionFile" accept="image/*" required>
+            </div>
+            <div class="mb-3 d-flex gap-2">
+                <button type="button" class="btn btn-secondary" onclick="generateBLIPCaption()">KI-Caption generieren</button>
+                <button type="button" class="btn btn-secondary" onclick="generateBLIPHashtags()">KI-Hashtags generieren</button>
+            </div>
+            <div class="mb-3">
+                <textarea class="form-control" name="caption" id="captionField" placeholder="Caption"></textarea>
+            </div>
+            <div class="mb-3">
+                <input class="form-control" type="text" name="hashtags" id="hashtagsField" placeholder="Hashtags">
+            </div>
+            <div class="mb-3">
+                <input class="form-control" type="datetime-local" name="scheduled_time">
+            </div>
+            <button type="submit" class="btn btn-primary">Hochladen</button>
+        </form>
+    </div>
 
-<!-- Video -->
-<div class="tab-pane fade" id="video" role="tabpanel">
-    <form method="POST" action="/upload_video" enctype="multipart/form-data">
-        <input class="form-control mb-2" type="file" name="file" accept="video/*" required>
-        <textarea class="form-control mb-2" name="caption" placeholder="Caption"></textarea>
-        <input class="form-control mb-2" type="text" name="hashtags" placeholder="Hashtags">
-        <input class="form-control mb-2" type="datetime-local" name="scheduled_time">
-        <button type="submit" class="btn btn-primary">Hochladen</button>
-    </form>
-</div>
+    <!-- Video -->
+    <div class="tab-pane fade" id="video" role="tabpanel">
+        <form method="POST" action="/upload_video" enctype="multipart/form-data">
+            <div class="mb-3">
+                <input class="form-control" type="file" name="file" accept="video/*" required>
+            </div>
+            <div class="mb-3">
+                <textarea class="form-control" name="caption" placeholder="Caption"></textarea>
+            </div>
+            <div class="mb-3">
+                <input class="form-control" type="text" name="hashtags" placeholder="Hashtags">
+            </div>
+            <div class="mb-3">
+                <input class="form-control" type="datetime-local" name="scheduled_time">
+            </div>
+            <button type="submit" class="btn btn-primary">Hochladen</button>
+        </form>
+    </div>
 
-
+    <!-- KI-Generator -->
+    <div class="tab-pane fade" id="ai-generator" role="tabpanel">
+        <form method="POST" action="/generate_image">
+            <div class="mb-3">
+                <input class="form-control" type="text" name="prompt" placeholder="Prompt eingeben" required>
+            </div>
+            <button type="submit" class="btn btn-primary">KI-Bild generieren</button>
+        </form>
+        <small class="text-muted">Das Bild wird automatisch hochskaliert und als Draft gespeichert.</small>
+    </div>
 </div>
 
 <hr>
 <h4>Geplante Posts</h4>
 <ul class="list-group mb-3">
-  {% for post in scheduled_posts %}
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <div>
-        {{ post[2] | replace('app/static/', '') }} 
-        (geplant für: {{ post[6] or "sofort" }}) — Status: {{ post[7] }}
-      </div>
-      <div>
-        <a href="{{ url_for('main.trigger_post', post_id=post[0]) }}" class="btn btn-sm btn-success">Sofort posten</a>
-        <a href="{{ url_for('main.delete_post', post_id=post[0]) }}" class="btn btn-sm btn-danger">Löschen</a>
-      </div>
-    </li>
-  {% else %}
-    <li class="list-group-item">Keine geplanten Posts</li>
-  {% endfor %}
+    {% for post in scheduled_posts %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+                {{ post[2] | replace('app/static/', '') }} (geplant für: {{ post[6] or 'sofort' }}) — Status: {{ post[7] }}
+            </div>
+            <div>
+                <a href="{{ url_for('main.trigger_post', post_id=post[0]) }}" class="btn btn-sm btn-success">Sofort posten</a>
+                <a href="{{ url_for('main.delete_post', post_id=post[0]) }}" class="btn btn-sm btn-danger">Löschen</a>
+            </div>
+        </li>
+    {% else %}
+        <li class="list-group-item">Keine geplanten Posts</li>
+    {% endfor %}
 </ul>
 
 <h4>Bereits gepostete / fehlgeschlagene Posts</h4>
 <ul class="list-group">
-  {% for post in completed_posts %}
-    <li class="list-group-item">
-      {{ post[2] | replace('app/static/', '') }} — Status: {{ post[7] }}
-    </li>
-  {% else %}
-    <li class="list-group-item">Noch keine abgeschlossenen Posts</li>
-  {% endfor %}
+    {% for post in completed_posts %}
+        <li class="list-group-item">
+            {{ post[2] | replace('app/static/', '') }} — Status: {{ post[7] }}
+        </li>
+    {% else %}
+        <li class="list-group-item">Noch keine abgeschlossenen Posts</li>
+    {% endfor %}
 </ul>
+
+<script src="{{ url_for('static', filename='js/blip_generator.js') }}"></script>
 {% endblock %}
