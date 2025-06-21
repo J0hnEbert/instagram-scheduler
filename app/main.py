@@ -94,6 +94,7 @@ def upload_image_caption():
     caption = request.form.get('caption')
     hashtags = request.form.get('hashtags')
     scheduled_time = normalize_scheduled_time(request.form.get('scheduled_time'))
+    print(f"DEBUG UPLOAD: Caption='{caption}', Hashtags='{hashtags}'")
     insert_post(session['username'], path, caption, hashtags, 'image_caption', scheduled_time)
     flash("Bild + Caption erfolgreich eingeplant!" if scheduled_time else "Bild + Caption erfolgreich hochgeladen!", 'success')
     return redirect(url_for('main.dashboard'))
@@ -175,6 +176,11 @@ def trigger_post(post_id):
 
     if not post:
         flash('Post nicht gefunden.', 'danger')
+        return redirect(url_for('main.dashboard'))
+
+    # NEU: Prüfen ob Post bereits gepostet ist
+    if post[7] == 'posted':
+        flash(f'Post {post_id} wurde bereits gepostet.', 'warning')
         return redirect(url_for('main.dashboard'))
 
     try:
