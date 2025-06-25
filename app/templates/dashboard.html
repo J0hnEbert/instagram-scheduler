@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<h3>Dashboard</h3>
+<h3>Instagram Scheduler</h3>
 
 <ul class="nav nav-tabs" id="postTab" role="tablist">
     <li class="nav-item" role="presentation">
@@ -14,6 +14,9 @@
     </li>
     <li class="nav-item" role="presentation">
         <button class="nav-link" id="ai-tab" data-bs-toggle="tab" data-bs-target="#ai-generator" type="button" role="tab">KI-Generator</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="help-tab" data-bs-toggle="tab" data-bs-target="#help" type="button" role="tab">Hilfe & Kontakt</button>
     </li>
 </ul>
 
@@ -40,8 +43,8 @@
                 <input class="form-control" type="file" name="file" id="imageCaptionFile" accept="image/*" required>
             </div>
             <div class="mb-3 d-flex gap-2">
-                <button type="button" class="btn btn-secondary" onclick="generateBLIPCaption()">KI-Caption generieren</button>
-                <button type="button" class="btn btn-secondary" onclick="generateBLIPHashtags()">KI-Hashtags generieren</button>
+                <button type="button" class="btn-primary" onclick="generateBLIPCaption()">KI-Caption generieren</button>
+                <button type="button" class="btn-primary" onclick="generateBLIPHashtags()">KI-Hashtags generieren</button>
             </div>
             <div class="mb-3">
                 <textarea class="form-control" name="caption" id="captionField" placeholder="Caption"></textarea>
@@ -83,38 +86,62 @@
             </div>
             <button type="submit" class="btn btn-primary">KI-Bild generieren</button>
         </form>
-        <small class="text-muted">Das Bild wird automatisch hochskaliert und als Draft gespeichert.</small>
+        <small class="text-muted">Das Generieren kann mehrere Minuten in Anspruch nehmen (3 Minuten im Durchschnitt).</small>
+    </div>
+
+    <!-- Hilfe -->
+    <div class="tab-pane fade" id="help" role="tabpanel">
+        <h5>Hilfe zur Nutzung</h5>
+        <p>Dieses Dashboard erlaubt dir, Instagram-Inhalte einfach lokal zu planen und automatisch zu posten.</p>
+        <ul>
+            <li><strong>Bild:</strong> Lade ein einzelnes Bild hoch und plane optional eine Veröffentlichungszeit.</li>
+            <li><strong>Bild + Caption:</strong> Zusätzlich zum Bild kannst du hier eine Beschreibung (Caption) und Hashtags angeben oder mit Hilfe von KI automatisch generieren lassen.</li>
+            <li><strong>Video:</strong> Lade ein Video mit optionaler Beschreibung und Hashtags hoch, auch hier kannst du eine Zeit planen.</li>
+            <li><strong>KI-Generator:</strong> Gib einen Prompt ein, z. B. "Ein Hund auf einem Skateboard", und ein Bild wird lokal per KI generiert. Das dauert ca. 3 Minuten. Danach kannst du es wie ein normales Bild verwenden.</li>
+        </ul>
+        <p>Weitere Funktionen:</p>
+        <ul>
+            <li><strong>Geplante Posts:</strong> Zeigt eine Übersicht der geplanten Inhalte. Du kannst Posts sofort veröffentlichen oder löschen.</li>
+            <li><strong>Bereits gepostet / Fehlgeschlagen:</strong> Liste aller abgeschlossenen oder gescheiterten Post-Versuche, zur Kontrolle und Analyse.</li>
+            <li><strong>Logout / Multi-Account-Support:</strong> Mit dem Logout-Button kannst du dich jederzeit abmelden und zwischen mehreren Instagram-Konten wechseln. Deine Posts werden auch bei einem Logout gespeichert und weiterhin gepostet (solange das Programm läuft).</li>
+            <li><strong>Home-Button:</strong> Der Home-Button oben links bringt dich wieder auf die Startseite des Dashboards zurück.</li>
+        </ul>
+        <p class="text-muted">Dieses Tool ist vollständig lokal und verwendet <code>instagrapi</code> zur sicheren Kommunikation mit Instagram. Du brauchst eine stabile Internetverbindung und einen gültigen Login.</p>
+        <p class="text-muted">Benötigst du Hilfe oder möchtest Lob oder Kritik äußern, dann erreichst du uns unter: <code>wi22241@lehre.dhbw-stuttgart.de</code></p>
+    </div>
+
+    <!-- Geplante & vergangene Posts -->
+    <div class="tab-pane fade show active" style="display: block;">
+        <hr>
+        <h4>Geplante Posts</h4>
+        <ul class="list-group mb-3">
+            {% for post in scheduled_posts %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        {{ post[2] | replace('app/static/', '') }} (geplant für: {{ post[6] or 'sofort' }}) — Status: {{ post[7] }}
+                    </div>
+                    <div>
+                        <a href="{{ url_for('main.trigger_post', post_id=post[0]) }}" class="btn btn-sm btn-success-sm ">Sofort posten</a>
+                        <a href="{{ url_for('main.delete_post', post_id=post[0]) }}" class="btn btn-sm btn-danger-sm">Post löschen</a>
+                    </div>
+                </li>
+            {% else %}
+                <li class="list-group-item">Keine geplanten Posts</li>
+            {% endfor %}
+        </ul>
+
+        <h4>Bereits gepostete / fehlgeschlagene Posts</h4>
+        <ul class="list-group">
+            {% for post in completed_posts %}
+                <li class="list-group-item">
+                    {{ post[2] | replace('app/static/', '') }} — Status: {{ post[7] }}
+                </li>
+            {% else %}
+                <li class="list-group-item">Noch keine abgeschlossenen Posts</li>
+            {% endfor %}
+        </ul>
     </div>
 </div>
-
-<hr>
-<h4>Geplante Posts</h4>
-<ul class="list-group mb-3">
-    {% for post in scheduled_posts %}
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div>
-                {{ post[2] | replace('app/static/', '') }} (geplant für: {{ post[6] or 'sofort' }}) — Status: {{ post[7] }}
-            </div>
-            <div>
-                <a href="{{ url_for('main.trigger_post', post_id=post[0]) }}" class="btn btn-sm btn-success">Sofort posten</a>
-                <a href="{{ url_for('main.delete_post', post_id=post[0]) }}" class="btn btn-sm btn-danger">Löschen</a>
-            </div>
-        </li>
-    {% else %}
-        <li class="list-group-item">Keine geplanten Posts</li>
-    {% endfor %}
-</ul>
-
-<h4>Bereits gepostete / fehlgeschlagene Posts</h4>
-<ul class="list-group">
-    {% for post in completed_posts %}
-        <li class="list-group-item">
-            {{ post[2] | replace('app/static/', '') }} — Status: {{ post[7] }}
-        </li>
-    {% else %}
-        <li class="list-group-item">Noch keine abgeschlossenen Posts</li>
-    {% endfor %}
-</ul>
 
 <script src="{{ url_for('static', filename='js/blip_generator.js') }}"></script>
 {% endblock %}

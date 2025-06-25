@@ -16,8 +16,6 @@ def generate_caption(image_path):
     return caption
 
 def generate_hashtags(image_path):
-    # Für diese Demo: Wir verwenden die Caption als Basis
-    # Du kannst hier ein weiteres Bildanalyse-Tool oder NLP einsetzen
     caption = generate_caption(image_path)
     words = re.findall(r'\b[a-zA-ZäöüÄÖÜß]{3,}\b', caption.lower())
     unique_words = sorted(set(words))

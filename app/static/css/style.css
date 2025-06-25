@@ -1,7 +1,198 @@
+/* === Allgemeines Layout === */
 body {
-    background-color: #f8f9fa;
+    font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: #fafafa;
+    color: #262626;
+    margin: 0;
+    padding: 0;
 }
 
+.container {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 20px;
+}
+
+/* === Überschrift im Instagram-Style === */
 h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(45deg, #d62976, #962fbf, #4f5bd5,#feda75, #fa7e1e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+h4 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #262626;
+    margin-bottom: 20px;
+}
+
+/* === Tabs === */
+.nav-tabs {
+    border-bottom: 2px solid #dbdbdb;
+}
+
+.nav-tabs .nav-link {
+    color: #8e8e8e;
+    font-weight: 600;
+    padding: 10px 20px;
+    border: none;
+    transition: color 0.3s, border-color 0.3s;
+}
+
+.nav-tabs .nav-link:hover {
+    color: #d62976;
+}
+
+.nav-tabs .nav-link.active {
+    color: #262626;
+    border-bottom: 3px solid #d62976;
+}
+
+/* === Buttons === */
+.btn-primary {
+    background: linear-gradient(45deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 600;
+    color: #fff;
+    text-transform: uppercase;
+    transition: opacity 0.3s;
+}
+
+.btn-primary:hover {
+    opacity: 0.85;
+}
+
+.btn-secondary {
+    background-color: #efefef;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    color: #262626;
+    font-weight: 500;
+}
+.btn-sm {
+    margin: 5px;
+    margin-left: 200px;
+    font-size: 0.875rem;
+    border-radius: 6px;
+    text-align: center;
+    width: 125px;
+    height: 35px;
+
+}
+.btn-success-sm {
+    background-color: #28a745;
+    color: #fff;
+    font-weight: 600;
+    display: inline-block;
+}
+.btn-danger-sm {
+    background-color: #ff4d4d;
+    color: #fff;
+    font-weight: 600;
+    display: inline-block;
+}
+.btn-secondary:hover {
+    background-color: #dbdbdb;
+}
+
+.btn-abort {
+    background-color: #ff4d4d;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    color: #fff;
+    font-weight: 600;
+}
+
+.btn-success {
+    background-color: #28a745;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    color: #fff;
+    font-weight: 600;
+}
+
+/* === Formulare === */
+.form-control {
+    border: 1px solid #dbdbdb;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 1rem;
+    background: #fff;
+    transition: border-color 0.2s;
+}
+
+.form-control:focus {
+    border-color: #d62976;
+}
+
+/* === Post-Listen === */
+.list-group-item {
+    background-color: #fff;
+    border: 1px solid #dbdbdb;
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.list-group-item div:first-child {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.list-group-item img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #dbdbdb;
+}
+
+/* === Tab Inhalte === */
+.tab-content {
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #dbdbdb;
+    border-radius: 8px;
     margin-top: 20px;
 }
+
+/* === Kleinigkeiten === */
+a {
+    color: #d62976;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #dbdbdb;
+    margin: 20px 0;
+}
+
+.text-muted {
+    color: #8e8e8e;
+    font-size: 0.85rem;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    color: #262626;
+}
+

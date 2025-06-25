@@ -9,7 +9,6 @@ init_db()
 
 def start_scheduler():
     if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-        # Nur beim echten Start, nicht beim Debug-Neustart
         t = threading.Thread(target=scheduler_loop, daemon=True)
         t.start()
         print("[Main] Scheduler Thread gestartet.")

@@ -8,24 +8,24 @@
   
   <div class="mb-2">
     <textarea class="form-control" name="caption" id="captionField" placeholder="Caption"></textarea>
-    <button type="button" class="btn btn-secondary mt-1" onclick="generatePreviewCaption()">KI-Caption generieren</button>
+    <button type="button" class="btn-primary" onclick="generatePreviewCaption()">KI-Caption generieren</button>
   </div>
   
   <div class="mb-2">
     <input class="form-control" type="text" name="hashtags" id="hashtagsField" placeholder="Hashtags">
-    <button type="button" class="btn btn-secondary mt-1" onclick="generatePreviewHashtags()">KI-Hashtags generieren</button>
+    <button type="button" class="btn-primary" onclick="generatePreviewHashtags()">KI-Hashtags generieren</button>
   </div>
   
   <div class="mb-2">
     <input class="form-control" type="datetime-local" name="scheduled_time">
   </div>
 
-  <button type="submit" class="btn btn-success">Bestätigen und übernehmen</button>
+  <button type="submit" class="btn-success">Bestätigen und übernehmen</button>
 </form>
 
 <form method="POST" action="{{ url_for('main.cancel_generated_image') }}" class="mt-2">
   <input type="hidden" name="image_path" value="{{ image_path }}">
-  <button type="submit" class="btn btn-secondary">Abbrechen und löschen</button>
+  <button type="submit" class="btn-abort">Abbrechen und löschen</button>
 </form>
 
 <script src="{{ url_for('static', filename='js/approve_generated.js') }}"></script>

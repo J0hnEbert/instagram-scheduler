@@ -5,14 +5,14 @@
     <title>Instagram Scheduler</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div class="container-fluid">
-    <a class="navbar-brand" href="{{ url_for('main.dashboard') }}">Instagram Scheduler</a>
+    <a class="navbar-brand" href="{{ url_for('main.dashboard') }}">Home</a>
     {% if session.get('logged_in') %}
-    <a class="btn btn-outline-secondary" href="{{ url_for('main.logout') }}">Logout</a>
+    <a class="btn-primary" href="{{ url_for('main.logout') }}">Logout</a>
     {% endif %}
   </div>
 </nav>

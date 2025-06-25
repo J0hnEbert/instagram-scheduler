@@ -178,7 +178,7 @@ def trigger_post(post_id):
         flash('Post nicht gefunden.', 'danger')
         return redirect(url_for('main.dashboard'))
 
-    # NEU: Prüfen ob Post bereits gepostet ist
+    
     if post[7] == 'posted':
         flash(f'Post {post_id} wurde bereits gepostet.', 'warning')
         return redirect(url_for('main.dashboard'))
