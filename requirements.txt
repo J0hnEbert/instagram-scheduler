@@ -1,0 +1,7 @@
+flask
+instagrapi
+pillow
+torch
+transformers
+diffusers
+huggingface_hub
